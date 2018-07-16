@@ -10,7 +10,7 @@
   "keywords": ["logging", "sysadmin", "tools", "winston", "couchdb"],
   "license": "MIT",
   "dependencies": {
-    "cradle": "0.6.x",
+    "cradle": "https://github.com/shirakaba/cradle/tarball/shirakaba-security-redos",
     "cycle": "1.0.x"
   },
   "devDependencies": {
