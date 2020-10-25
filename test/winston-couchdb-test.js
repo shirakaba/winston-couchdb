@@ -7,13 +7,13 @@
  */
 
 var vows = require('vows'),
-    transport = require('winston/test/transports/transport'),
-    Couchdb = require('../lib/winston-couchdb').Couchdb;
+    transport = require('./transports/transport'),
+    Couchdb = require('../lib/winston-couchdb');
 
 vows.describe('winston/transports/couchdb').addBatch({
-  'An instance of the Couchdb Transport': transport(Couchdb, {
+  'An instance of the Couchdb Transport': transport(new Couchdb( {
     host: 'localhost',
     port: 5984,
     db: 'winston-couch-test'
-  })
+  }))
 }).export(module);
