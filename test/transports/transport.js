@@ -16,14 +16,13 @@ const assert = require('assert'),
 
 Couchdb.registerTransport();
 
-module.exports = (transport, options) => {
+module.exports = function (transport) {
   const logger = transport instanceof winston.transports.Console
     ? transport 
     : winston.createLogger({
-      format: winston.format.combine(
-        winston.format.json()
-      ),
-      transports: [transport]
+      format: winston.format.json(),
+      transports: [transport],
+      ...transport.options
   });
 
   // console.log(`Got Logger`, transport.name)
