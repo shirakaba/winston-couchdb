@@ -8,32 +8,34 @@
  * Originally ported from https://github.com/winstonjs/winston/tree/0.6.2/test
  */
 
-var assert = require('assert'),
-    winston = require('../../lib/winston'),
-    helpers = require('../helpers');
+const assert = require('assert'),
+    winston = require('winston'),
+    helpers = require('../helpers'),
+    winstronTransports = require('winston/lib/winston/transports');
 
-module.exports = function (transport, options) {
-  var logger = transport instanceof winston.Logger
-    ? transport
-    : new winston.Logger({
-        transports: [
-          new transport(options)
-        ]
-      });
+module.exports = (transport, options) => {
+  const logger = transport instanceof winstronTransports.Console 
+    ? transport 
+    : winston.createLogger({
+      format: winston.format.combine(
+        winston.format.json()
+      ),
+      transports: [transport]
+  });
 
   // hack to fix transports that don't log
   // any unit of time smaller than seconds
-  var common = require('../../lib/winston/common');
-  common.timestamp = function() {
+  const common = require('winston/lib/winston/common');
+  common.timestamp = () => {
     return new Date().toISOString();
   };
 
-  var transport = logger.transports[logger._names[0]];
+  const transport = logger.transports[logger._names[0]];
 
-  var out = {
+  const out = {
     'topic': logger,
     'when passed valid options': {
-      'should have the proper methods defined': function () {
+      'should have the proper methods defined': () => {
         switch (transport.name) {
           case 'console':
             helpers.assertConsole(transport);
@@ -52,38 +54,38 @@ module.exports = function (transport, options) {
       }
     },
     'the log() method': helpers.testNpmLevels(transport,
-      'should respond with true', function (ign, err, logged) {
+      'should respond with true', (ign, err, logged) => {
         assert.isNull(err);
         assert.isNotNull(logged);
       }
     ),
     'the stream() method': {
       'using no options': {
-        'topic': function () {
+        'topic': () => {
           if (!transport.stream) return;
 
           logger.log('info', 'hello world', {});
 
-          var cb = this.callback,
+          let cb = this.callback,
               j = 10,
               i = 10,
               results = [],
               stream = logger.stream();
 
-          stream.on('log', function (log) {
+          stream.on('log', (log) => {
             results.push(log);
             results.stream = stream;
             if (!--j) cb(null, results);
           });
 
-          stream.on('error', function () {});
+          stream.on('error', () => {});
 
           while (i--) logger.log('info', 'hello world ' + i, {});
         },
-        'should stream logs': function (err, results) {
+        'should stream logs': (err, results) => {
           if (!transport.stream) return;
           assert.isNull(err);
-          results.forEach(function (log) {
+          results.forEach((log) => {
             assert.ok(log.message.indexOf('hello world') === 0
                       || log.message.indexOf('test message') === 0);
           });
@@ -91,19 +93,19 @@ module.exports = function (transport, options) {
         }
       },
       'using the `start` option': {
-        'topic': function () {
+        'topic': () => {
           if (!transport.stream) return;
 
-          var cb = this.callback,
+          let cb = this.callback,
               stream = logger.stream({ start: 0 });
 
-          stream.on('log', function (log) {
+          stream.on('log', (log) => {
             log.stream = stream;
             if (cb) cb(null, log);
             cb = null;
           });
         },
-        'should stream logs': function (err, log) {
+        'should stream logs': (err, log) => {
           if (!transport.stream) return;
           assert.isNull(err);
           assert.isNotNull(log.message);
@@ -112,19 +114,19 @@ module.exports = function (transport, options) {
       }
     },
     'after the logs have flushed': {
-      topic: function () {
+      'topic': () => {
         setTimeout(this.callback, 1000);
       },
       'the query() method': {
         'using basic querying': {
-          'topic': function () {
+          'topic': () => {
             if (!transport.query) return;
-            var cb = this.callback;
-            logger.log('info', 'hello world', {}, function () {
+            const cb = this.callback;
+            logger.log('info', 'hello world', {}, () => {
               logger.query(cb);
             });
           },
-          'should return matching results': function (err, results) {
+          'should return matching results': (err, results) => {
             if (!transport.query) return;
             assert.isNull(err);
             results = results[transport.name];
@@ -137,52 +139,51 @@ module.exports = function (transport, options) {
           }
         },
         'using the `rows` option': {
-          'topic': function () {
+          'topic': () => {
             if (!transport.query) return;
-            var cb = this.callback;
-            logger.log('info', 'hello world', {}, function () {
+            const cb = this.callback;
+            logger.log('info', 'hello world', {}, () => {
               logger.query({ rows: 1 }, cb);
             });
           },
-          'should return one result': function (err, results) {
+          'should return one result': (err, results) => {
             if (!transport.query) return;
             assert.isNull(err);
             results = results[transport.name];
             while (!Array.isArray(results)) {
               results = results[Object.keys(results).pop()];
             }
-            assert.equal(results.length, 1);
+            assert.strictEqual(results.length, 1);
           }
         },
         'using `fields` and `order` option': {
-          'topic': function () {
+          'topic': () => {
             if (!transport.query) return;
-            var cb = this.callback;
-            logger.log('info', 'hello world', {}, function () {
+            const cb = this.callback;
+            logger.log('info', 'hello world', {}, () => {
               logger.query({ order: 'asc', fields: ['timestamp'] }, cb);
             });
           },
-          'should return matching results': function (err, results) {
+          'should return matching results': (err, results) => {
             if (!transport.query) return;
             assert.isNull(err);
             results = results[transport.name];
             while (!Array.isArray(results)) {
               results = results[Object.keys(results).pop()];
             }
-            assert.equal(Object.keys(results[0]).length, 1);
-            assert.ok(new Date(results.shift().timestamp)
-                    < new Date(results.pop().timestamp));
+            assert.strictEqual(Object.keys(results[0]).length, 1);
+            assert.ok(new Date(results.shift().timestamp) < new Date(results.pop().timestamp));
           }
         },
         'using the `from` and `until` option': {
-          'topic': function () {
+          'topic': () => {
             if (!transport.query) return;
-            var cb = this.callback;
-            var start = new Date - 100 * 1000;
-            var end = new Date + 100 * 1000;
+            const cb = this.callback;
+            const start = new Date - 100 * 1000;
+            const end = new Date + 100 * 1000;
             logger.query({ from: start, until: end }, cb);
           },
-          'should return matching results': function (err, results) {
+          'should return matching results': (err, results) => {
             if (!transport.query) return;
             assert.isNull(err);
             results = results[transport.name];
@@ -193,22 +194,22 @@ module.exports = function (transport, options) {
           }
         },
         'using a bad `from` and `until` option': {
-          'topic': function () {
+          'topic': () => {
             if (!transport.query) return;
-            var cb = this.callback;
-            logger.log('info', 'bad from and until', {}, function () {
-              var now = new Date + 1000000;
+            const cb = this.callback;
+            logger.log('info', 'bad from and until', {}, () => {
+              const now = new Date + 1000000;
               logger.query({ from: now, until: now }, cb);
             });
           },
-          'should return no results': function (err, results) {
+          'should return no results': (err, results) => {
             if (!transport.query) return;
             assert.isNull(err);
             results = results[transport.name];
             while (!Array.isArray(results)) {
               results = results[Object.keys(results).pop()];
             }
-            results = [results.filter(function(log) {
+            results = [results.filter((log) => {
               return log.message === 'bad from and until';
             }).pop()];
             assert.isUndefined(results[0]);
@@ -219,4 +220,4 @@ module.exports = function (transport, options) {
   };
 
   return out;
-};
+}
