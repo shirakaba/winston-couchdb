@@ -12,6 +12,7 @@ var vows = require('vows'),
     utils = require('util');
 
 utils.print = console.log;
+utils.puts = console.log;
 
 vows.describe('winston/transports/couchdb').addBatch({
   'An instance of the Couchdb Transport': transport(new Couchdb({
