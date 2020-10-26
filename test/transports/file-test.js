@@ -13,7 +13,7 @@ var path = require('path'),
     vows = require('vows'),
     fs = require('fs'),
     assert = require('assert'),
-    winston = require('../../lib/winston'),
+    winston = require('winston'),
     helpers = require('../helpers');
 
 var transport = require('./transport');

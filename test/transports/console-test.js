@@ -12,7 +12,7 @@
 var path = require('path'),
     vows = require('vows'),
     assert = require('assert'),
-    winston = require('../../lib/winston'),
+    winston = require('winston'),
     helpers = require('../helpers');
 
 var npmTransport = new (winston.transports.Console)(),
