@@ -11,10 +11,13 @@
 const assert = require('assert'),
     winston = require('winston'),
     helpers = require('../helpers'),
-    winstronTransports = require('winston/lib/winston/transports');
+    Couchdb = require('../../lib/winston-couchdb');
+
+
+Couchdb.registerTransport();
 
 module.exports = (transport, options) => {
-  const logger = transport instanceof winstronTransports.Console 
+  const logger = transport instanceof winston.transports.Console
     ? transport 
     : winston.createLogger({
       format: winston.format.combine(
@@ -23,14 +26,13 @@ module.exports = (transport, options) => {
       transports: [transport]
   });
 
+  // console.log(`Got Logger`, transport.name)
   // hack to fix transports that don't log
   // any unit of time smaller than seconds
   const common = require('winston/lib/winston/common');
   common.timestamp = () => {
     return new Date().toISOString();
   };
-
-  const transport = logger.transports[logger._names[0]];
 
   const out = {
     'topic': logger,
@@ -47,6 +49,7 @@ module.exports = (transport, options) => {
             helpers.assertWebhook(transport);
             break;
           case 'couchdb':
+            // console.log(`Testing Couchdb transport`,winston.transports)
             helpers.assertCouchdb(transport);
             break;
         }

@@ -15,11 +15,11 @@ var assert = require('assert'),
     spawn = require('child_process').spawn,
     util = require('util'),
     vows = require('vows'),
-    winston = require('../lib/winston');    
+    winston = require('winston');    
     
 var helpers = exports;
 
-helpers.size = function (obj) {
+helpers.size = (obj) => {
   var size = 0, key;
   for (key in obj) {
     if (obj.hasOwnProperty(key)) {
@@ -30,16 +30,16 @@ helpers.size = function (obj) {
   return size;
 };
 
-helpers.tryUnlink = function (file) {
+helpers.tryUnlink = (file) => {
   try { fs.unlinkSync(file) }
   catch (ex) { }
 };
 
-helpers.assertDateInfo = function (info) {
+helpers.assertDateInfo = (info) => {
   assert.isNumber(Date.parse(info));
 };
 
-helpers.assertProcessInfo = function (info) {
+helpers.assertProcessInfo = (info) => {
   assert.isNumber(info.pid);
   assert.isNumber(info.uid);
   assert.isNumber(info.gid);
@@ -50,13 +50,13 @@ helpers.assertProcessInfo = function (info) {
   assert.isObject(info.memoryUsage);
 };
 
-helpers.assertOsInfo = function (info) {
+helpers.assertOsInfo = (info) => {
   assert.isArray(info.loadavg);
   assert.isNumber(info.uptime);
 };
 
-helpers.assertTrace = function (trace) {
-  trace.forEach(function (site) {
+helpers.assertTrace = (trace) => {
+  trace.forEach((site) => {
     assert.isTrue(!site.column || typeof site.column === 'number');
     assert.isTrue(!site.line || typeof site.line === 'number');
     assert.isTrue(!site.file || typeof site.file === 'string');
@@ -66,49 +66,49 @@ helpers.assertTrace = function (trace) {
   });
 };
 
-helpers.assertLogger = function (logger, level) {
-  assert.instanceOf(logger, winston.Logger);
+helpers.assertLogger = (logger, level) => {
+  assert.instanceOf(logger, winston.transports.Console);
   assert.isFunction(logger.log);
   assert.isFunction(logger.add);
   assert.isFunction(logger.remove);
   assert.equal(logger.level, level || "info");
-  Object.keys(logger.levels).forEach(function (method) {
+  Object.keys(logger.levels).forEach((method) => {
     assert.isFunction(logger[method]);
   });
 };
 
-helpers.assertConsole = function (transport) {
+helpers.assertConsole = (transport) => {
   assert.instanceOf(transport, winston.transports.Console);
   assert.isFunction(transport.log);
 };
 
-helpers.assertFile = function (transport) {
+helpers.assertFile = (transport) => {
   assert.instanceOf(transport, winston.transports.File);
   assert.isFunction(transport.log);
 }
 
-helpers.assertWebhook = function (transport) {
+helpers.assertWebhook = (transport) => {
   assert.instanceOf(transport, winston.transports.Webhook);
   assert.isFunction(transport.log);
 };
 
-helpers.assertCouchdb = function (transport) {
+helpers.assertCouchdb = (transport) => {
   assert.instanceOf(transport, winston.transports.Couchdb);
   assert.isFunction(transport.log);
 };
 
-helpers.assertHandleExceptions = function (options) {
+helpers.assertHandleExceptions = (options) => {
   return {
-    topic: function () {
-      var that = this,
+    topic: () => {
+      const that = this,
           child = spawn('node', [options.script]);
 
       helpers.tryUnlink(options.logfile);
-      child.on('exit', function () {
+      child.on('exit', () => {
         fs.readFile(options.logfile, that.callback);
       });
     },
-    "should save the error information to the specified file": function (err, data) {
+    "should save the error information to the specified file": (err, data) => {
       assert.isTrue(!err);
       data = JSON.parse(data);
 
@@ -120,20 +120,20 @@ helpers.assertHandleExceptions = function (options) {
   }
 }
 
-helpers.testNpmLevels = function (transport, assertMsg, assertFn) {
+helpers.testNpmLevels = (transport, assertMsg, assertFn) => {
   return helpers.testLevels(winston.config.npm.levels, transport, assertMsg, assertFn);
 };
 
-helpers.testSyslogLevels = function (transport, assertMsg, assertFn) {
+helpers.testSyslogLevels = (transport, assertMsg, assertFn) => {
   return helpers.testLevels(winston.config.syslog.levels, transport, assertMsg, assertFn);
 };
 
-helpers.testLevels = function (levels, transport, assertMsg, assertFn) {
-  var tests = {};
+helpers.testLevels = (levels, transport, assertMsg, assertFn) => {
+  const tests = {};
   
-  Object.keys(levels).forEach(function (level) {
-    var test = {
-      topic: function () {
+  Object.keys(levels).forEach((level) => {
+    const test = {
+      topic: () => {
         transport.log(level, 'test message', {}, this.callback.bind(this, null));
       }
     };
@@ -142,8 +142,8 @@ helpers.testLevels = function (levels, transport, assertMsg, assertFn) {
     tests['with the ' + level + ' level'] = test;
   });
   
-  var metadatatest = {
-    topic: function () {
+  const metadatatest = {
+    topic: () => {
       transport.log('info', 'test message', { metadata: true }, this.callback.bind(this, null));
     }
   };
@@ -151,8 +151,8 @@ helpers.testLevels = function (levels, transport, assertMsg, assertFn) {
   metadatatest[assertMsg] = assertFn;
   tests['when passed metadata'] = metadatatest;
 
-  var primmetadatatest = {
-    topic: function () {
+  const primmetadatatest = {
+    topic: () => {
       transport.log('info', 'test message', 'metadata', this.callback.bind(this, null));
     }
   };
@@ -160,11 +160,11 @@ helpers.testLevels = function (levels, transport, assertMsg, assertFn) {
   primmetadatatest[assertMsg] = assertFn;
   tests['when passed primitive metadata'] = primmetadatatest;
 
-  var circmetadata = { }; 
+  const circmetadata = { }; 
   circmetadata['metadata'] = circmetadata;
 
-  var circmetadatatest = {
-    topic: function () {
+  const circmetadatatest = {
+    topic: () => {
       transport.log('info', 'test message', circmetadata, this.callback.bind(this, null));
     }
   };
