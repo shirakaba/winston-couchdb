@@ -54,6 +54,10 @@ module.exports = (transport, options) => {
             break;
         }
         assert.isFunction(transport.log);
+      },
+      'should have url defined with http': () => {
+        assert.ok(/^https?:/.test(transport.host), 'host is not valid');
+        assert.ok(/^https?:/.test(transport.url), 'url is not valid');
       }
     },
     'the log() method': helpers.testNpmLevels(transport,

@@ -11,7 +11,7 @@ var vows = require('vows'),
     Couchdb = require('../lib/winston-couchdb');
 
 vows.describe('winston/transports/couchdb').addBatch({
-  'An instance of the Couchdb Transport': transport(new Couchdb( {
+  'An instance of the Couchdb Transport': transport(new Couchdb({
     host: 'localhost',
     port: 5984,
     db: 'winston-couch-test'
