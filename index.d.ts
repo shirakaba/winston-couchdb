@@ -26,7 +26,7 @@ export declare namespace winstonCouchdb {
         /**
          * Any additional meta information to send with the log
          */
-        meta: any;
+        meta?: any;
     }
 
     export interface ICouchTransportStreamOptions extends TransportStreamOptions {
@@ -52,7 +52,7 @@ export declare namespace winstonCouchdb {
          * Port for the couchdb instance
          */
         port: number;
-        auth: IAuthOptions;
+        auth?: IAuthOptions;
         /**
          * If we are using https
          */
@@ -84,7 +84,7 @@ export declare namespace winstonCouchdb {
      * @type {Stream}
      * @extends {TransportStream}
      */
-    export declare class Couchdb extends TransportStream {
+    export class Couchdb extends TransportStream {
 
         get client(): DocumentScope<any>;
 
@@ -135,7 +135,7 @@ export declare namespace winstonCouchdb {
          * Ensure the `byTimestamp` view. This is necessary for the `from` and `until` options.
          * @param {function} callback Continuation to respond to when complete.
          */
-        private _ensureView(callback?: Function = (() => {})): any;
+        private _ensureView(callback?: Function): any;
 
         /**
         * Ensure the existence of a Nano client.
