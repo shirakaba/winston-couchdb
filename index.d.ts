@@ -8,7 +8,7 @@
 import { Stream, TransportStreamOptions } from "winston-transport";
 import * as TransportStream from "winston-transport";
 import { DocumentScope } from "nano";
-declare namespace winstonCouchdb {
+export declare namespace winstonCouchdb {
 
     export interface IAuthOptions {
 
