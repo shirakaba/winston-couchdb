@@ -8,8 +8,8 @@
 import { Stream, TransportStreamOptions } from "winston-transport";
 import * as TransportStream from "winston-transport";
 import { DocumentScope } from "nano";
-export declare namespace winstonCouchdb {
 
+declare namespace winstonCouchdb {
     export interface IAuthOptions {
 
     }
@@ -145,3 +145,5 @@ export declare namespace winstonCouchdb {
 
     }
 }
+
+export = winstonCouchdb;
