@@ -33,7 +33,10 @@ const logger = winston.createLogger({
   ],
 });
 
-// 3. Add the WinstonCouchdb transporter to the logger.
+// 3. Register the custom transport
+WinstonCouchdb.registerTransport(winston);
+
+// 4. Add the WinstonCouchdb transporter to the logger.
 logger.add(new WinstonCouchdb({
   host: 'localhost'
   , port: 5984
@@ -43,7 +46,7 @@ logger.add(new WinstonCouchdb({
   , level: 'info'
 }));
 
-// 4. Start logging
+// 5. Start logging
 logger.log('Hello world', ()=>{});
 logger.log('info', 'hello world with custom level', {}, () => {});
 

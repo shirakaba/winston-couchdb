@@ -128,8 +128,9 @@ declare namespace winstonCouchdb {
 
         /**
          * Registers the transport to winston
+         * @param _winston the winston module to register the transport to
          */
-        static registerTransport(): void;
+        static registerTransport(_winston?: typeof winston): void;
 
         /**
          * Ensure the `byTimestamp` view. This is necessary for the `from` and `until` options.

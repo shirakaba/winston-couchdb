@@ -14,7 +14,7 @@ const assert = require('assert'),
     Couchdb = require('../../lib/winston-couchdb');
 
 
-Couchdb.registerTransport();
+Couchdb.registerTransport(winston);
 
 module.exports = function (transport) {
   const logger = transport instanceof winston.transports.Console
