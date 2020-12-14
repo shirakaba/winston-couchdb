@@ -1,7 +1,7 @@
 winston-couchdb
 ===============
 
-A full featured CouchDB transport for winston with some winston 3 cababilities.
+A full featured CouchDB transport for winston 3.
 
 [![Build Status](https://travis-ci.org/indexzero/winston-couchdb.png)](https://travis-ci.org/indexzero/winston-couchdb)
 
